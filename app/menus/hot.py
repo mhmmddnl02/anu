@@ -1,68 +1,114 @@
 import requests
-
 from app.client.engsel import get_family
 from app.menus.package import show_package_details
 from app.service.auth import AuthInstance
-from app.menus.util import clear_screen, pause
+from app.menus.util import clear_screen, pause, pesan_error, pesan_info
+from app.theme import _c, console
+
+from rich.panel import Panel
+from rich.table import Table
+from rich.box import MINIMAL_DOUBLE_HEAD
+from rich.align import Align
+
+def tampilkan_header():
+    header_text = Align.center(f"[{_c('text_title')}]✨Daftar Paket TerHOT🔥✨[/]")
+    panel = Panel(
+        header_text,
+        border_style=_c("border_primary"),
+        padding=(1, 4),
+        expand=True
+    )
+    console.print(panel)
+
+def tampilkan_hot_packages(hot_packages):
+    table = Table(box=MINIMAL_DOUBLE_HEAD, expand=True)
+    table.add_column("No", justify="right", style=_c("text_number"), width=4)
+    table.add_column("Family", style=_c("text_body"))
+    table.add_column("Variant", style=_c("text_body"))
+    table.add_column("Option", style=_c("text_body"))
+
+    for idx, p in enumerate(hot_packages, 1):
+        table.add_row(str(idx), p["family_name"], p["variant_name"], p["option_name"])
+
+    panel = Panel(
+        table,
+        #title=f"[{_c('text_title')}]judul tabel[/]",
+        border_style=_c("border_info"),
+        padding=(0, 0),
+        expand=True
+    )
+    console.print(panel)
+
+from rich.text import Text
+from rich.align import Align
+
+def tampilkan_menu_opsi():
+    kode_text = Text("00", style=_c("text_number"))
+    aksi_text = Text("Kembali ke menu utama", style=_c("text_err"))
+    kombinasi_text = Text.assemble(kode_text, " ", aksi_text)
+
+    panel = Panel(
+        Align.center(kombinasi_text),
+        border_style=_c("border_primary"),
+        title="",
+        title_align="center",
+        expand=True,
+        padding=(0, 1)
+    )
+    console.print(panel)
 
 def show_hot_menu():
     api_key = AuthInstance.api_key
     tokens = AuthInstance.get_active_tokens()
-    
-    in_bookmark_menu = True
-    while in_bookmark_menu:
+    in_hot_menu = True
+
+    while in_hot_menu:
         clear_screen()
-        print("--------------------------")
-        print("🔥 Paket Hot 🔥")
-        print("--------------------------")
-        
+        tampilkan_header()
+
         url = "https://me.mashu.lol/pg-hot.json"
-        response = requests.get(url, timeout=30)
-        if response.status_code != 200:
-            print("Gagal mengambil data hot package.")
+        try:
+            response = requests.get(url, timeout=30)
+            response.raise_for_status()
+        except Exception as e:
+            pesan_error(f"Gagal mengambil data hot package: {e}")
             pause()
-            return None
+            return
 
         hot_packages = response.json()
+        tampilkan_hot_packages(hot_packages)
+        tampilkan_menu_opsi()
 
-        for idx, p in enumerate(hot_packages):
-            print(f"{idx + 1}. {p['family_name']} - {p['variant_name']} - {p['option_name']}")
-        
-        print("00. Kembali ke menu utama")
-        print("--------------------------")
-        choice = input("Pilih paket (nomor): ")
+        choice = console.input(f"[{_c('text_sub')}]Pilih paket (nomor):[/{_c('text_sub')}] ").strip()
         if choice == "00":
-            in_bookmark_menu = False
-            return None
+            in_hot_menu = False
+            return
+
         if choice.isdigit() and 1 <= int(choice) <= len(hot_packages):
             selected_bm = hot_packages[int(choice) - 1]
             family_code = selected_bm["family_code"]
             is_enterprise = selected_bm["is_enterprise"]
-            
+
             family_data = get_family(api_key, tokens, family_code, is_enterprise)
             if not family_data:
-                print("Gagal mengambil data family.")
+                pesan_error("Gagal mengambil data family.")
                 pause()
                 continue
-            
-            package_variants = family_data["package_variants"]
+
             option_code = None
-            for variant in package_variants:
+            for variant in family_data["package_variants"]:
                 if variant["name"] == selected_bm["variant_name"]:
-                    selected_variant = variant
-                    
-                    package_options = selected_variant["package_options"]
-                    for option in package_options:
+                    for option in variant["package_options"]:
                         if option["order"] == selected_bm["order"]:
-                            selected_option = option
-                            option_code = selected_option["package_option_code"]
+                            option_code = option["package_option_code"]
                             break
-            
+
             if option_code:
-                print(f"{option_code}")
-                show_package_details(api_key, tokens, option_code, is_enterprise)            
-            
+                console.print(f"[{_c('text_value')}]{option_code}[/{_c('text_value')}]")
+                show_package_details(api_key, tokens, option_code, is_enterprise)
+            else:
+                pesan_error("Paket tidak ditemukan.")
+                pause()
         else:
-            print("Input tidak valid. Silahkan coba lagi.")
+            pesan_error("Input tidak valid. Silahkan coba lagi.")
             pause()
-            continue
