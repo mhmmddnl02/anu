@@ -235,7 +235,7 @@ def get_profile(api_key: str, access_token: str, id_token: str) -> dict:
         "access_token": access_token,
         "app_version": "8.7.0",
         "is_enterprise": False,
-        "lang": "en"
+        "lang": "id"
     }
 
     print("Fetching profile...")
@@ -248,7 +248,7 @@ def get_balance(api_key: str, id_token: str) -> dict:
     
     raw_payload = {
         "is_enterprise": False,
-        "lang": "en"
+        "lang": "id"
     }
     
     print("Fetching balance...")
@@ -276,7 +276,7 @@ def get_family(api_key: str, tokens: dict, family_code: str, is_enterprise: bool
         "is_pdlp": True,
         "referral_code": "",
         "is_migration": False,
-        "lang": "en"
+        "lang": "id"
     }
     
     res = send_api_request(api_key, path, payload_dict, id_token, "POST")
@@ -298,7 +298,7 @@ def get_families(api_key: str, tokens: dict, package_category_code: str) -> dict
         "package_category_code": package_category_code,
         "with_icon_url": True,
         "is_migration": False,
-        "lang": "en"
+        "lang": "id"
     }
     
     res = send_api_request(api_key, path, payload_dict, tokens["id_token"], "POST")
@@ -328,7 +328,7 @@ def get_package(
         "is_enterprise": False,
         "is_shareable": False,
         "is_migration": False,
-        "lang": "en",
+        "lang": "id",
         "package_option_code": package_option_code,
         "is_upsell_pdp": False,
         "package_variant_code": ""
@@ -350,7 +350,7 @@ def get_addons(api_key: str, tokens: dict, package_option_code: str) -> dict:
     
     raw_payload = {
         "is_enterprise": False,
-        "lang": "en",
+        "lang": "id",
         "package_option_code": package_option_code
     }
     
@@ -463,7 +463,7 @@ def purchase_package(
         "payment_type": "PURCHASE",
         "is_enterprise": is_enterprise,
         "payment_target": payment_target,
-        "lang": "en",
+        "lang": "id",
         "is_referral": False,
         "token_confirmation": token_confirmation
     }
@@ -503,7 +503,7 @@ def purchase_package(
             "value": 0
         },
         "is_use_point": False,
-        "lang": "en",
+        "lang": "id",
         "payment_method": "BALANCE",
         "timestamp": int(time.time()),
         "points_gained": 0,
@@ -562,5 +562,6 @@ def purchase_package(
     print(f"Purchase result:\n{json.dumps(purchase_result, indent=2)}")
     
     input("Press Enter to continue...")
+
 
     
