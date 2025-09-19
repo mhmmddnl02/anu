@@ -8,8 +8,9 @@ from app.client.engsel import *
 from app.service.auth import AuthInstance
 from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
-from app.menus.package import fetch_my_packages, get_packages_by_family
-from app.menus.hot import show_hot_menu
+from app.menus.package import fetch_my_packages, get_packages_by_family, show_package_details
+from app.menus.hot import show_hot_menu, show_hot_menu2
+from app.service.sentry import enter_sentry_mode
 
 def show_main_menu(number, balance, balance_expired_at):
     clear_screen()
@@ -18,21 +19,22 @@ def show_main_menu(number, balance, balance_expired_at):
     expired_at = balance_expired_at
     expired_at_dt = datetime.fromtimestamp(expired_at).strftime("%Y-%m-%d %H:%M:%S")
     
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("Informasi Akun")
     print(f"Nomor: {phone_number}")
     print(f"Pulsa: Rp {remaining_balance}")
     print(f"Masa aktif: {expired_at_dt}")
-    print("--------------------------")
+    print("-------------------------------------------------------")
     print("Menu:")
     print("1. Login/Ganti akun")
     print("2. Lihat Paket Saya")
     print("3. Beli Paket 🔥 HOT 🔥")
-    print("4. Beli Paket Berdasarkan Family Code")
-    print("5. Beli Paket Berdasarkan Family Code (Enterprise)")
+    print("4. Beli Paket 🔥 HOT-2 🔥")
+    print("5. Beli Paket Berdasarkan Family Code")
+    print("6. Beli Paket Berdasarkan Family Code (Enterprise)")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
-    print("--------------------------")
+    print("-------------------------------------------------------")
 
 show_menu = True
 def main():
@@ -62,11 +64,13 @@ def main():
             elif choice == "3":
                 show_hot_menu()
             elif choice == "4":
+                show_hot_menu2()
+            elif choice == "5":
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
                     continue
                 get_packages_by_family(family_code)
-            elif choice == "5":
+            elif choice == "6":
                 family_code = input("Enter family code (or '99' to cancel): ")
                 if family_code == "99":
                     continue
@@ -77,17 +81,9 @@ def main():
                 print("Exiting the application.")
                 sys.exit(0)
             elif choice == "9":
-                # Playground
                 pass
-                # data = get_package(
-                #     AuthInstance.api_key,
-                #     active_user["tokens"],
-                #     "U0NfX8A08oQLUQuLplGhfT_FXQokJ9GFF9kAKRiV5trm6BfbRoxrsizKkWIVNxM0az6lroT92FYXnWmTXRXZOl1Meg",
-                #     ""
-                #     ""
-                #     )
-                # print(json.dumps(data, indent=2))
-                # pause()
+            elif choice == "s":
+                enter_sentry_mode()
             else:
                 print("Invalid choice. Please try again.")
                 pause()
@@ -104,6 +100,5 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         print("\nExiting the application.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        
+    # except Exception as e:
+    #     print(f"An error occurred: {e}")
