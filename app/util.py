@@ -63,6 +63,7 @@ def ensure_api_key() -> str:
             print("Existing API key is invalid. Please enter a new one.")
 
     # Prompt user if missing or invalid
+    print("Dapatkan API key di Bot Telegram @fyxt_bot")
     api_key = input("Masukkan API key: ").strip()
     if not api_key:
         print("API key tidak boleh kosong. Menutup aplikasi.")
@@ -75,3 +76,4 @@ def ensure_api_key() -> str:
 
     save_api_key(api_key)
     return api_key
+        
