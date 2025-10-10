@@ -12,6 +12,7 @@ from app.menus.bookmark import show_bookmark_menu
 from app.menus.account import show_account_menu
 from app.menus.package import fetch_my_packages, get_packages_by_family
 from app.menus.hot import show_hot_menu, show_hot_menu2
+from app.menus.bot import show_auto_payment_bot
 from app.service.sentry import enter_sentry_mode
 
 def show_main_menu(profile):
@@ -33,6 +34,7 @@ def show_main_menu(profile):
     print("4. Beli Paket 🔥 HOT-2 🔥")
     print("5. Beli Paket Berdasarkan Family Code")
     print("6. Riwayat Transaksi")
+    print("7. 100Mb Auto renewally")
     print("00. Bookmark Paket")
     print("99. Tutup aplikasi")
     print("-------------------------------------------------------")
@@ -94,6 +96,9 @@ def main():
                 get_packages_by_family(family_code)
             elif choice == "6":
                 show_transaction_history(AuthInstance.api_key, active_user["tokens"])
+            
+            elif choice == "7":
+                show_auto_payment_bot()
             elif choice == "00":
                 show_bookmark_menu()
             elif choice == "99":
@@ -128,3 +133,4 @@ if __name__ == "__main__":
         print("\nExiting the application.")
     # except Exception as e:
     #     print(f"An error occurred: {e}")
+    
